@@ -167,56 +167,71 @@
 <body>
   <h1>Gaussian Beam Calculator</h1>
 
-  <!-- Outer container for everything -->
   <div class="container">
-    <!-- Top row: Choose which variable to solve for (single row) -->
+    <!-- Top row: Choose which variable to solve for -->
     <div class="variable-select">
-      <label><input type="radio" name="unknownVar" value="Pi" checked> Incident Power (P<sub>i</sub>)</label>
-      <label><input type="radio" name="unknownVar" value="Pt"> Transmitted Power (P<sub>t</sub>)</label>
-      <label><input type="radio" name="unknownVar" value="d"> Pinhole Diameter (d)</label>
-      <label><input type="radio" name="unknownVar" value="w"> Beam Size (1/e<sup>2</sup> radius, w)</label>
+      <label>
+        <input type="radio" name="unknownVar" value="Pi" checked>
+        Incident Power (Pᵢ)
+      </label>
+      <label>
+        <input type="radio" name="unknownVar" value="Pt">
+        Transmitted Power (Pₜ)
+      </label>
+      <label>
+        <input type="radio" name="unknownVar" value="d">
+        Pinhole Diameter (d)
+      </label>
+      <label>
+        <input type="radio" name="unknownVar" value="w">
+        Beam Size (w, 1/e²)
+      </label>
     </div>
 
-    <!-- Input values -->
     <h2>Input Values</h2>
     <div class="grid">
       <div>
-        <label for="Pi">Incident Power (mW):</label>
+        <label for="Pi">Incident Power (Pᵢ) [mW]:</label>
         <input type="number" id="Pi" step="0.001" placeholder="e.g. 20" value="20" oninput="enforceUnknown('Pi')">
       </div>
       <div>
-        <label for="Pt">Transmitted Power (mW):</label>
+        <label for="Pt">Transmitted Power (Pₜ) [mW]:</label>
         <input type="number" id="Pt" step="0.001" placeholder="e.g. 4.5" value="4.5" oninput="enforceUnknown('Pt')">
       </div>
       <div>
-        <label for="d">Pinhole Diameter (µm):</label>
+        <label for="d">Pinhole Diameter (d) [µm]:</label>
         <input type="number" id="d" step="0.01" placeholder="e.g. 200" value="200" oninput="enforceUnknown('d')">
       </div>
       <div>
-        <label for="w">Beam 1/e<sup>2</sup> radius (µm):</label>
+        <label for="w">Beam Radius (w, 1/e²) [µm]:</label>
         <input type="number" id="w" step="0.01" placeholder="e.g. 280" value="280" oninput="syncFWHMfromW()">
       </div>
       <div>
-        <label for="fwhm">OR FWHM diameter (µm):</label>
+        <label for="fwhm">OR FWHM Diameter [µm]:</label>
         <input type="number" id="fwhm" step="0.01" placeholder="e.g. 330" value="330" oninput="syncWfromFWHM()">
       </div>
     </div>
 
     <button type="button" onclick="solve()">Calculate</button>
-
     <div id="results"></div>
   </div>
 
-  <!-- More instructions at the bottom -->
   <div class="instructions">
     <h2>How to Use</h2>
-    <p>Select exactly one unknown variable at the top. Provide valid numeric values in the other fields, then click <strong>Calculate</strong> to solve.</p>
-    <p>If you prefer to specify FWHM instead of <em>w</em>, fill the <strong>FWHM diameter</strong> field — the calculator auto-converts it to <em>w</em>. If <em>w</em> is your unknown, do not type in either <em>w</em> or FWHM.</p>
+    <p>
+      Select exactly one unknown variable at the top. Provide valid numeric values in the other fields,
+      then click <strong>Calculate</strong> to solve.
+    </p>
+    <p>
+      If you prefer to specify FWHM instead of <em>w</em>, fill the <strong>FWHM diameter</strong> field —
+      the calculator auto-converts it to <em>w</em>. If <em>w</em> is your unknown, do not type
+      in either <em>w</em> or FWHM.
+    </p>
 
     <h3>Under the Hood</h3>
     <ol>
-      <li><code>T = P<sub>t</sub> / P<sub>i</sub></code></li>
-      <li><code>T = 1 – exp(–2r² / w²)</code> where <code>r = d/2</code></li>
+      <li><code>T = Pₜ / Pᵢ</code></li>
+      <li><code>T = 1 – exp(–2r² / w²)</code>, where <code>r = d/2</code></li>
       <li><code>FWHM = √(2 ln(2)) × w</code></li>
     </ol>
 
@@ -224,18 +239,16 @@
       The tool solves for whichever variable is unknown:
     </p>
     <ul>
-      <li>P<sub>i</sub>: Incident Power</li>
-      <li>P<sub>t</sub>: Transmitted Power</li>
-      <li>d: Pinhole Diameter</li>
-      <li>w: 1/e<sup>2</sup> Radius (with FWHM = 1.177 <em>w</em>)</li>
+      <li>Pᵢ : Incident Power</li>
+      <li>Pₜ : Transmitted Power</li>
+      <li>d  : Pinhole Diameter</li>
+      <li>w  : 1/e² Radius (with FWHM ≈ 1.177 w)</li>
     </ul>
   </div>
 
   <script>
-  // Factor for FWHM <-> w conversions:
   const FWHM_FACTOR = Math.sqrt(2 * Math.log(2));
 
-  // Prevent messing up the unknown by typing in that field.
   function enforceUnknown(id){
     const unknown = document.querySelector('input[name="unknownVar"]:checked').value;
     if (id === unknown){
@@ -243,10 +256,9 @@
     }
   }
 
-  // Keep w <-> fwhm in sync. If user changes w, update fwhm.
   function syncFWHMfromW(){
     const unknown = document.querySelector('input[name="unknownVar"]:checked').value;
-    if (unknown === 'w') return; // If w is unknown, let it remain blank.
+    if (unknown === 'w') return;
 
     const wVal = parseFloat(document.getElementById('w').value);
     if(!isNaN(wVal) && wVal > 0){
@@ -257,10 +269,9 @@
     }
   }
 
-  // Keep w <-> fwhm in sync. If user changes fwhm, update w.
   function syncWfromFWHM(){
     const unknown = document.querySelector('input[name="unknownVar"]:checked').value;
-    if (unknown === 'w') return; // If w is unknown, let it remain blank.
+    if (unknown === 'w') return;
 
     const fVal = parseFloat(document.getElementById('fwhm').value);
     if(!isNaN(fVal) && fVal > 0){
@@ -290,7 +301,6 @@
     }
 
     try {
-      // Solve for whichever is unknown.
       if(unknown === 'Pi'){
         if(isNaN(Pt) || Pt <= 0){
           throw new Error('Transmitted power must be > 0 if Pi is unknown.');
@@ -307,7 +317,6 @@
           throw new Error(`Invalid T= ${T.toFixed(3)}. Possibly pinhole too large/small for w.`);
         }
         Pi = Pt / T;
-
       } else if(unknown === 'Pt'){
         if(isNaN(Pi) || Pi <= 0){
           throw new Error('Incident power must be > 0 if Pt is unknown.');
@@ -321,7 +330,6 @@
         const r = d / 2;
         const T = 1 - Math.exp(-2*(r*r)/(w*w));
         Pt = Pi * T;
-
       } else if(unknown === 'd'){
         if(isNaN(Pi) || Pi <= 0){
           throw new Error('Incident power must be > 0 if d is unknown.');
@@ -339,7 +347,6 @@
         const oneMinusT = 1 - T;
         const lnTerm = safeLog(oneMinusT);
         d = Math.sqrt(-2 * w*w * lnTerm);
-
       } else if(unknown === 'w'){
         if(isNaN(Pi) || Pi <= 0){
           throw new Error('Incident power must be > 0 if w is unknown.');
@@ -358,30 +365,29 @@
         const oneMinusT = 1 - T;
         const lnTerm = safeLog(oneMinusT);
         w = Math.sqrt(-2*(r*r) / lnTerm);
-
       } else {
         throw new Error('No valid unknown selected.');
       }
 
-      // Compute final fraction and FWHM
       const T = Pt / Pi;
       const fwhm = FWHM_FACTOR * w;
 
-      // Update fields to reflect solution
+      // Update displayed fields
       document.getElementById('Pi').value = Pi.toFixed(4);
       document.getElementById('Pt').value = Pt.toFixed(4);
       document.getElementById('d').value  = d.toFixed(4);
       document.getElementById('w').value  = w.toFixed(4);
       document.getElementById('fwhm').value = fwhm.toFixed(4);
 
-      // Show results
       let html = `<h3>Solution</h3>`;
-      html += `<p>Incident Power (Pi) = <strong>${Pi.toFixed(4)} mW</strong><br>`;
-      html += `Transmitted Power (Pt) = <strong>${Pt.toFixed(4)} mW</strong><br>`;
+      html += `<p>`;
+      html += `Incident Power (Pᵢ) = <strong>${Pi.toFixed(4)} mW</strong><br>`;
+      html += `Transmitted Power (Pₜ) = <strong>${Pt.toFixed(4)} mW</strong><br>`;
       html += `Pinhole Diameter (d) = <strong>${d.toFixed(4)} µm</strong><br>`;
-      html += `Beam radius (w) = <strong>${w.toFixed(4)} µm</strong><br>`;
-      html += `FWHM diameter = <strong>${fwhm.toFixed(4)} µm</strong><br>`;
-      html += `Transmission fraction (T) = <strong>${(T*100).toFixed(2)}%</strong></p>`;
+      html += `Beam Radius (w, 1/e²) = <strong>${w.toFixed(4)} µm</strong><br>`;
+      html += `FWHM Diameter = <strong>${fwhm.toFixed(4)} µm</strong><br>`;
+      html += `Transmission Fraction (T) = <strong>${(T*100).toFixed(2)}%</strong>`;
+      html += `</p>`;
 
       resultsDiv.innerHTML = html;
     } catch(err){
